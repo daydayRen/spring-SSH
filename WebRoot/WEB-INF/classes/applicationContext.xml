@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    <!-- 配置SessionFactory -->
+    
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+
+		<property name="driverClassName">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+
+		<property name="url">
+			<value>jdbc:mysql://localhost:3306/ssh</value>
+		</property>
+
+		<property name="username">
+			<value>root</value>
+		</property>
+
+		<property name="password">
+			<value>root</value>
+		</property>
+
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+
+		<property name="mappingResources">
+			<list>
+				<value>com/demo/domain/User.hbm.xml</value>
+				
+			</list>
+		</property>
+		<property name="hibernateProperties">
+
+			<props>
+
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop>
+				<prop key="hibernate.show_sql">true</prop>
+
+			</props>
+
+		</property>
+
+	</bean>
+	
+	
+ 	
+    <bean id="userDao" class="com.demo.dao.imp.UserDaoImp"
+	 	abstract="false" lazy-init="default" autowire="default">
+	 	<property name="sessionFactory">
+	 		<ref bean="sessionFactory" />
+	 	</property>
+	 </bean>	
+	 <!-- 为service或者action中注入 dao或者service -->  
+	 <bean id="userService" class="com.demo.service.imp.UserServiceImp">
+	 	<property name="userDao" ref="userDao"></property>
+	 </bean> 
+	 
+	 <bean id="loginAction" class="com.demo.action.LoginAction">
+	 	<property name="userService" ref="userService" ></property>
+	 </bean>
+	 <bean id="allUserAction" class="com.demo.action.AllUserAction">
+	 	<property name="userService" ref="userService" ></property>
+	 </bean>
+	 <bean id="saveAction" class="com.demo.action.SaveAction">
+	 	<property name="userService" ref="userService" ></property>
+	 </bean>
+	  <bean id="deleteUserAction" class="com.demo.action.DeleteUserAction">
+	 	<property name="userService" ref="userService" ></property>
+	 </bean>
+	 <bean id="updateUserAction" class="com.demo.action.UpdateUserAction">
+	 	<property name="userService" ref="userService" ></property>
+	 </bean>
+</beans>
